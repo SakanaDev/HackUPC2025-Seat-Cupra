@@ -1,43 +1,56 @@
 <script>
 import CarOutside from './components/CarOutside.vue';
 import CarInside from './components/CarInside.vue';
+import VideoPro from './components/VideoPro.vue';
 
 export default {
   data() {
     return {
       isOutside: true,
+      showContent: false, // Controla la visibilidad del contenido
     }
   },
   components: {
     CarOutside,
     CarInside,
+    VideoPro,
+  },
+  methods: {
+    handleVideoEnd() {
+      this.showContent = true; // Mostrar contenido cuando el video termine
+    }
   }
 }
 </script>
 
 <template>
-  <header>
-    <a href="">
-      <img src="https://www.cupraofficial.es/etc.clientlibs/cupra-website/components/clientlibs/resources/icons/logos/logo-cupra.svg" alt="">
-    </a>
-  </header>
+  <VideoPro v-if="!showContent" @video-ended="handleVideoEnd" />
   
-  <div class="car-container">
-    <CarOutside v-if="isOutside" :key="'outside'"/>
-    <CarInside v-if="!isOutside" :key="'inside'"/>
-  </div>
-  
-  <div class="view-selector">
-    <button @click="isOutside=true" :class="{ active: isOutside }">
-      <img src="./assets/car-icon.png" alt="Exterior">
-    </button>
-    <button @click="isOutside=false" :class="{ active: !isOutside }">
-      <img src="./assets/seat-icon.png" alt="Interior">
-    </button>
+  <div v-if="showContent" class="main-content">
+    <header>
+      <a href="">
+        <img src="https://www.cupraofficial.es/etc.clientlibs/cupra-website/components/clientlibs/resources/icons/logos/logo-cupra.svg" alt="">
+      </a>
+    </header>
+    
+    <div class="car-container">
+      <CarOutside v-if="isOutside" :key="'outside'"/>
+      <CarInside v-if="!isOutside" :key="'inside'"/>
+    </div>
+    
+    <div class="view-selector">
+      <button @click="isOutside=true" :class="{ active: isOutside }">
+        <img src="./assets/car-icon.png" alt="Exterior">
+      </button>
+      <button @click="isOutside=false" :class="{ active: !isOutside }">
+        <img src="./assets/seat-icon.png" alt="Interior">
+      </button>
+    </div>
   </div>
 </template>
 
 <style scoped>
+/* Mantén tus estilos actuales igual */
 header {
   position: relative;
   background-color: black;
@@ -68,14 +81,6 @@ header {
   z-index: 100;
 }
 
-.view-selector {
-  z-index: 100; /* Menor que los botones de navegación */
-}
-
-header {
-  z-index: 1000; /* El más alto */
-}
-
 .view-selector button {
   background: black;
   border: none;
@@ -102,5 +107,10 @@ header {
 
 .view-selector button.active img {
   filter: invert(0);
+}
+
+.main-content {
+  position: relative;
+  z-index: 1;
 }
 </style>
