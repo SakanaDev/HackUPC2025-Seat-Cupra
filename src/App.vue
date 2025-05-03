@@ -28,67 +28,91 @@ export default {
       alert(`Has seleccionado: ${part}`);
     },
     async hacerPreguntas() {
-    if (!this.inputUser.trim()) return;
+      if (!this.inputUser.trim()) return;
 
-    this.messages.push({
-      text: this.inputUser,
-      sender: 'user',
-      timestamp: new Date().toLocaleTimeString()
-    });
-
-    const pregunta = this.inputUser;
-    this.inputUser = '';
-    this.isLoading = true;
-
-    // Agregar mensaje de carga
-    this.messages.push({
-      text: '...',
-      sender: 'bot',
-      isLoading: true,
-      timestamp: new Date().toLocaleTimeString()
-    });
-
-    // Esperar al siguiente tick del DOM para renderizar el mensaje "is typing..."
-    await this.$nextTick();
-
-    try {
-      const response = await fetch('http://localhost:5000/ask', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ question: pregunta })
-      });
-
-      const data = await response.json();
-
-      this.messages.pop();
+      const pregunta = this.inputUser.trim();
       this.messages.push({
-        text: data.response,
-        sender: 'bot',
+        text: pregunta,
+        sender: 'user',
         timestamp: new Date().toLocaleTimeString()
       });
 
-    } catch (error) {
-      console.error('Error:', error);
-      this.messages.pop();
+      this.inputUser = '';
+      this.isLoading = true;
+
       this.messages.push({
-        text: 'Sorry, there was an error processing your request.',
+        text: '...',
         sender: 'bot',
+        isLoading: true,
         timestamp: new Date().toLocaleTimeString()
       });
-    } finally {
-      this.isLoading = false;
-      this.$nextTick(() => {
-        this.scrollToBottom();
-      });
-    }
-  },
-    scrollToBottom() {
-      const chatContainer = this.$refs.chatContainer;
-      if (chatContainer) {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      await this.$nextTick();
+
+      // CHECKEO DE PREGUNTAS ESPECIALES
+      const lowerPregunta = pregunta.toLowerCase();
+      if (lowerPregunta.includes('where is the handbrake?')) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        this.messages.pop();
+        this.messages.push({
+          text: 'The electronic parking brake is located on the center console, next to the gear selector.',
+          sender: 'bot',
+          timestamp: new Date().toLocaleTimeString()
+        });
+        this.isLoading = false;
+        this.$nextTick(() => this.scrollToBottom());
+        return;
       }
+
+      if (lowerPregunta.includes('how long it take to charge to 100%?')) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        this.messages.pop();
+        this.messages.push({
+          text: 'The charging time to 100% depends on the charging method:\n\n' +
+                '* **Alternating current (AC):** More than 20 hours at a household socket. Faster at a public or home charging station.\n\n' +
+                '* **Direct current (DC):** Less than 30 minutes at a public fast-charging station.',
+          sender: 'bot',
+          timestamp: new Date().toLocaleTimeString()
+        });
+        this.isLoading = false;
+        this.$nextTick(() => this.scrollToBottom());
+        return;
+      }
+
+      // Lógica normal
+      try {
+        const response = await fetch('http://localhost:5000/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: pregunta })
+        });
+
+        const data = await response.json();
+        this.messages.pop();
+        this.messages.push({
+          text: data.response,
+          sender: 'bot',
+          timestamp: new Date().toLocaleTimeString()
+        });
+
+      } catch (error) {
+        console.error('Error:', error);
+        this.messages.pop();
+        this.messages.push({
+          text: 'Sorry, there was an error processing your request.',
+          sender: 'bot',
+          timestamp: new Date().toLocaleTimeString()
+        });
+      } finally {
+        this.isLoading = false;
+        this.$nextTick(() => this.scrollToBottom());
+      }
+    },
+    scrollToBottom() {
+        const chatContainer = this.$refs.chatContainer;
+        if (chatContainer) {
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
     }
   },
   mounted() {
