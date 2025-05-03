@@ -24,7 +24,7 @@ export default {
 </script>
 
 <template>
-  <VideoPro v-if="!showContent" @video-ended="handleVideoEnd" />
+  <!-- <VideoPro v-if="!showContent" @video-ended="handleVideoEnd" /> -->
   
   <div v-if="showContent" class="main-content">
     <header>
