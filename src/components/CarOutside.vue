@@ -275,7 +275,9 @@ export default {
 .hotspot {
   position: absolute;
   background-color: rgba(255, 255, 0, 0.3);
+  background-color: transparent;
   border: 2px dashed #ffcc00;
+  border: none;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -286,7 +288,7 @@ export default {
 }
 
 .hotspot:hover {
-  background-color: rgba(255, 200, 0, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
   transform: scale(1.1);
 }
 

@@ -91,7 +91,7 @@ export default {
           width: '60px',
           height: '60px',
           part: 'Fuses ›',
-          pdf: '.pdf',
+          pdf: 'fuses.pdf',
           clicked: false
         },
         {
@@ -102,7 +102,7 @@ export default {
           width: '120px',
           height: '120px',
           part: 'wheel with horn',
-          pdf: '.pdf',
+          pdf: 'airbag-wheel.pdf',
           clicked: false
         },
         {
@@ -112,8 +112,8 @@ export default {
           left: '25%',
           width: '900px',
           height: '800px',
-          part: 'Main menu',
-          pdf: '.pdf',
+          part: 'Screen',
+          pdf: 'infotainment.pdf',
           clicked: false
         },
         {
@@ -124,7 +124,7 @@ export default {
           width: '40px',
           height: '55px',
           part: 'airbag',
-          pdf: '.pdf',
+          pdf: 'airbag.pdf',
           clicked: false
         },
       ],
@@ -276,7 +276,9 @@ export default {
 .hotspot {
   position: absolute;
   background-color: rgba(255, 255, 0, 0.3);
+  background-color: transparent;
   border: 2px dashed #ffcc00;
+  border: none;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -287,7 +289,7 @@ export default {
 }
 
 .hotspot:hover {
-  background-color: rgba(255, 200, 0, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
   transform: scale(1.1);
 }
 
