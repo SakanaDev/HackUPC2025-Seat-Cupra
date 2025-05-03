@@ -2,6 +2,7 @@
 import CarOutside from './components/CarOutside.vue';
 import CarInside from './components/CarInside.vue';
 import VideoPro from './components/VideoPro.vue';
+import CarInteractive from './components/CarInteractive.vue'
 
 export default {
   data() {
@@ -14,18 +15,24 @@ export default {
     CarOutside,
     CarInside,
     VideoPro,
+    CarInteractive,
   },
   methods: {
     handleVideoEnd() {
       this.showContent = true; // Mostrar contenido cuando el video termine
-    }
+    },
+    handlePartClick(part) {
+      console.log(`Parte clickeada: ${part}`)
+      // Aquí puedes mostrar información, cambiar vistas, etc.
+      alert(`Has seleccionado: ${part}`)
+    },
   }
 }
 </script>
 
 <template>
-  <VideoPro v-if="!showContent" @video-ended="handleVideoEnd" />
-  
+  <!-- <VideoPro v-if="!showContent" @video-ended="handleVideoEnd" /> -->
+
   <div v-if="showContent" class="main-content">
     <header>
       <a href="">
