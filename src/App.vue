@@ -113,7 +113,7 @@ export default {
 
       <div class="header-button">
         <button class="header-btn" @click="chatbotFlag=!chatbotFlag">Help</button>
-        <button class="header-btn">Drove it</button>
+        <button class="header-btn">Drive it</button>
       </div>
     </header>
     
