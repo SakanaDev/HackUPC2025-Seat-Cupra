@@ -6,13 +6,13 @@ import json
 
 client = genai.Client(api_key = "AIzaSyCuDpqDuQMslHdR4HbMru2Y9DpE94w5UZg")
 
-doc_url = "https://hackupc2025.slack.com/files/U08NSQU4G1Z/F08QU6K8HKM/cupra_tavascan_owners_manual_11_24_gb.pdf"
+#doc_url = "https://hackupc2025.slack.com/files/U08NSQU4G1Z/F08QU6K8HKM/cupra_tavascan_owners_manual_11_24_gb.pdf"
 
 # Retrieve and encode the PDF byte
 filepath = pathlib.Path('manual_cupra.pdf')
 
 ### Entrada ###
-prompt = "eres un asistente virtual experto en ayudar a comprender manuales de usuario para nuevos clientes, responde esto sobre mi CUPRA Tavascan: " + input("¿En que puedo ayudarle?\n")
+prompt = "You're a virtual asisstant specialised in helping new customers understand the owner's manual, so help me with my new Cupra TAVASCAN: " + input("¿Hello! How can I help you?\n>")
 
 ### Procesamiento de la respuesta ###
 response = client.models.generate_content(
