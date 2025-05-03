@@ -2,7 +2,6 @@
 import CarOutside from './components/CarOutside.vue';
 import CarInside from './components/CarInside.vue';
 import VideoPro from './components/VideoPro.vue';
-import CarInteractive from './components/CarInteractive.vue'
 
 export default {
   data() {
@@ -15,7 +14,6 @@ export default {
     CarOutside,
     CarInside,
     VideoPro,
-    CarInteractive,
   },
   methods: {
     handleVideoEnd() {
@@ -31,7 +29,7 @@ export default {
 </script>
 
 <template>
-  <!-- <VideoPro v-if="!showContent" @video-ended="handleVideoEnd" /> -->
+  <VideoPro v-if="!showContent" @video-ended="handleVideoEnd" />
 
   <div v-if="showContent" class="main-content">
     <header>

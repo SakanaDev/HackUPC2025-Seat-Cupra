@@ -8,11 +8,12 @@ export default {
         {
           id: 1,
           index: 0,
-          top: '45%',
-          left: '15%',
-          width: '500px',
-          height: '90px',
-          part: 'Motor',
+          top: '40%',
+          left: '55%',
+          width: '350px',
+          height: '250px',
+          part: 'Door',
+          pdf: 'doors.pdf',
           clicked: false
         },
         {
@@ -22,7 +23,8 @@ export default {
           left: '47%',
           width: '130px',
           height: '200px',
-          part: 'Rueda',
+          part: 'Wheel',
+          pdf: 'wheels-and-tyres.pdf',
           clicked: false
         },
         {
@@ -32,20 +34,101 @@ export default {
           left: '72%',
           width: '100px',
           height: '170px',
-          part: 'Rueda Trasera',
+          part: 'Wheel',
+          pdf: 'wheels-and-tyres.pdf',
           clicked: false
         },
         {
           id: 4,
           index: 0,
-          top: '70%',
-          left: '40%',
-          width: '40px',
-          height: '40px',
-          part: 'Puerta',
+          top: '55%',
+          left: '10%',
+          width: '500px',
+          height: '200px',
+          part: 'Frontal',
+          pdf: 'assistant-frontal.pdf',
           clicked: false
-        }
-      ]
+        },
+        {
+          id: 6,
+          index: 0,
+          top: '27%',
+          left: '42%',
+          width: '70px',
+          height: '70px',
+          part: 'Frontal glass',
+          pdf: 'assistant-frontal.pdf',
+          clicked: false
+        },
+        {
+          id: 5,
+          index: 0,
+          top: '39%',
+          left: '57%',
+          width: '80px',
+          height: '40px',
+          part: 'Mirror',
+          pdf: 'assistant-frontal.pdf',
+          clicked: false
+        },
+        {
+          id: 1,
+          index: 1,
+          top: '40%',
+          left: '25%',
+          width: '350px',
+          height: '250px',
+          part: 'Door',
+          pdf: 'doors.pdf',
+          clicked: false
+        },
+        {
+          id: 2,
+          index: 1,
+          top: '60%',
+          left: '45%',
+          width: '130px',
+          height: '200px',
+          part: 'Wheel',
+          pdf: 'wheels-and-tyres.pdf',
+          clicked: false
+        },
+        {
+          id: 3,
+          index: 1,
+          top: '58%',
+          left: '22%',
+          width: '100px',
+          height: '170px',
+          part: 'Wheel',
+          pdf: 'wheels-and-tyres.pdf',
+          clicked: false
+        },
+        {
+          id: 4,
+          index: 1,
+          top: '39%',
+          left: '27%',
+          width: '80px',
+          height: '40px',
+          part: 'Mirror',
+          pdf: 'mirrors.pdf',
+          clicked: false
+        },
+        {
+          id: 4,
+          index: 1,
+          top: '39%',
+          left: '57%',
+          width: '500px',
+          height: '300px',
+          part: 'Back',
+          pdf: 'assistant-back.pdf',
+          clicked: false
+        },
+      ],
+      showPdfPopup: false,
+      currentPdf: ''
     }
   },
   methods: {
@@ -56,13 +139,21 @@ export default {
       this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
     },
     handleHotspotClick(hotspot) {
-      hotspot.clicked = true;
-      console.log(`Parte clickeada: ${hotspot.part}`);
-      alert(`Has seleccionado: ${hotspot.part}`);
-      
-      setTimeout(() => {
-        hotspot.clicked = false;
-      }, 500);
+      if (hotspot.pdf) {
+        // Cierra primero el popup para forzar reinicio
+        this.showPdfPopup = false;
+        
+        // Usa nextTick para asegurar que el DOM se actualizó
+        this.$nextTick(() => {
+          this.currentPdf = hotspot.pdf;
+          this.showPdfPopup = true;
+        });
+      } else {
+        alert(`No hay PDF disponible para ${hotspot.part}`);
+      }
+    },
+    closePdfPopup() {
+      this.showPdfPopup = false;
     }
   },
   computed: {
@@ -70,46 +161,62 @@ export default {
       return new URL(`../assets/${this.images[this.currentIndex]}`, import.meta.url).href;
     },
     visibleHotspots() {
-      // Filtrar hotspots que coincidan con el currentIndex actual
       return this.hotspots.filter(hotspot => hotspot.index === this.currentIndex);
+    },
+    pdfPath() {
+        if (!this.currentPdf) return null;
+        return `/pdfs/${this.currentPdf}`;
     }
   }
 }
 </script>
 
 <template>
-  <div class="fullscreen-container">
-    <!-- Imagen FULLSCREEN -->
-    <img :src="currentImage" :alt="`Image ${currentIndex + 1}`" class="fullscreen-image">
-    
-    <!-- Botones de navegación -->
-    <button class="nav-button left" @click="prevImage">
-      &lt;
-    </button>
-    <button class="nav-button right" @click="nextImage">
-      &gt;
-    </button>
-    
-    <!-- Hotspots interactivos (solo los visibles) -->
-    <button
-      v-for="hotspot in visibleHotspots"
-      :key="hotspot.id"
-      class="hotspot"
-      :style="{
-        top: hotspot.top,
-        left: hotspot.left,
-        width: hotspot.width,
-        height: hotspot.height,
-      }"
-      @click="handleHotspotClick(hotspot)"
-      :class="{ 'hotspot-clicked': hotspot.clicked }"
-      :title="`Ver ${hotspot.part}`"
-    ></button>
-  </div>
-</template>
+    <div class="fullscreen-container">
+      <!-- Imagen FULLSCREEN -->
+      <img :src="currentImage" :alt="`Image ${currentIndex + 1}`" class="fullscreen-image">
+      
+      <!-- Botones de navegación -->
+      <button class="nav-button left" @click="prevImage">
+        &lt;
+      </button>
+      <button class="nav-button right" @click="nextImage">
+        &gt;
+      </button>
+      
+      <!-- Hotspots interactivos -->
+      <button
+        v-for="hotspot in visibleHotspots"
+        :key="hotspot.id"
+        class="hotspot"
+        :style="{
+          top: hotspot.top,
+          left: hotspot.left,
+          width: hotspot.width,
+          height: hotspot.height,
+        }"
+        @click="handleHotspotClick(hotspot)"
+        :title="`Ver ${hotspot.part}`"
+      ></button>
+      
+      <!-- Popup de PDF con solución completa -->
+      <div v-if="showPdfPopup" class="pdf-popup">
+        <div class="pdf-popup-content">
+          <button class="close-btn" @click="closePdfPopup">×</button>
+          <iframe 
+            :key="'pdf-' + currentPdf"
+            :src="pdfPath" 
+            class="pdf-iframe"
+            frameborder="0"
+          ></iframe>
+          <p class="pdf-title">{{ currentPdf }}</p>
+        </div>
+      </div>
+    </div>
+  </template>
 
 <style scoped>
-/* Tus estilos existentes se mantienen igual */
+/* Estilos FULLSCREEN */
 .fullscreen-container {
   position: fixed;
   top: 0;
@@ -131,6 +238,7 @@ export default {
   z-index: 0;
 }
 
+/* Botones de navegación */
 .nav-button {
   position: fixed;
   top: 50%;
@@ -163,6 +271,7 @@ export default {
   right: 30px;
 }
 
+/* Hotspots */
 .hotspot {
   position: absolute;
   background-color: rgba(255, 255, 0, 0.3);
@@ -181,12 +290,63 @@ export default {
   transform: scale(1.1);
 }
 
-.hotspot-clicked {
-  background-color: rgba(0, 255, 0, 0.5) !important;
-  transform: scale(1.2);
-  border: 2px solid #00ff00;
+/* Popup PDF */
+.pdf-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
 }
 
+.pdf-popup-content {
+    background-color: white;
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+    height: 80%;
+    max-height: 90vh;
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    cursor: #333;
+    z-index: 2001;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.pdf-iframe {
+  width: 100%;
+  height: calc(100% - 30px);
+  margin-top: 10px;
+}
+
+.pdf-title {
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .nav-button {
     width: 50px;
@@ -203,6 +363,16 @@ export default {
   .hotspot {
     width: 40px !important;
     height: 40px !important;
+  }
+  
+  .pdf-popup-content {
+    width: 95%;
+    height: 95%;
+    padding: 15px;
+  }
+  
+  .pdf-iframe {
+    height: calc(100% - 25px);
   }
 }
 </style>

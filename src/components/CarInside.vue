@@ -13,17 +13,19 @@ export default {
           width: '120px',
           height: '40px',
           part: 'Door Handle',
+          pdf: 'doors.pdf',
           clicked: false,
         
         },
         {
           id: 2,
           index: 0,
-          top: '69.8%',
-          left: '13%',
-          width: '30px',
-          height: '30px',
+          top: '65%',
+          left: '11%',
+          width: '80px',
+          height: '70px',
           part: 'Central locking',
+          pdf: 'central-locking.pdf',
           clicked: false
         },
         {
@@ -34,6 +36,7 @@ export default {
           width: '100px',
           height: '35px',
           part: 'Turn signal and main beam lever',
+          pdf: 'beam-lever.pdf',
           clicked: false
         },
         {
@@ -44,6 +47,7 @@ export default {
           width: '130px',
           height: '60px',
           part: 'Multifunction steering wheel control panels ',
+          pdf: 'multifunction-wheel.pdf',
           clicked: false
         },
         {
@@ -54,6 +58,7 @@ export default {
           width: '130px',
           height: '70px',
           part: 'Digital Cockpit',
+          pdf: 'cockpit.pdf',
           clicked: false
         },
         {
@@ -64,16 +69,7 @@ export default {
           width: '32px',
           height: '60px',
           part: 'Gear selector',
-          clicked: false
-        },
-        {
-          id: 7,
-          index: 0,
-          top: '53%',
-          left: '54%',
-          width: '32px',
-          height: '60px',
-          part: 'Gear selector',
+          pdf: 'gear-selector.pdf',
           clicked: false
         },
         {
@@ -84,26 +80,18 @@ export default {
           width: '522px',
           height: '300px',
           part: ' Infotainment system',
+          pdf: 'infotainment.pdf',
           clicked: false
         },
         {
           id: 9,
           index: 0,
-          top: '67%',
-          left: '25%',
-          width: '40px',
-          height: '40px',
+          top: '64%',
+          left: '24.5%',
+          width: '60px',
+          height: '60px',
           part: 'Fuses ›',
-          clicked: false
-        },
-        {
-          id: 10,
-          index: 0,
-          top: '67%',
-          left: '25%',
-          width: '40px',
-          height: '40px',
-          part: 'Fuses ›',
+          pdf: '.pdf',
           clicked: false
         },
         {
@@ -114,66 +102,18 @@ export default {
           width: '120px',
           height: '120px',
           part: 'wheel with horn',
+          pdf: '.pdf',
           clicked: false
         },
         {
           id: 12,
           index: 1,
-          top: '24.5%',
-          left: '29%',
-          width: '100px',
-          height: '45px',
+          top: '10%',
+          left: '25%',
+          width: '900px',
+          height: '800px',
           part: 'Main menu',
-          clicked: false
-        },
-        {
-          id: 13,
-          index: 1,
-          top: '24.5%',
-          left: '37%',
-          width: '160px',
-          height: '45px',
-          part: 'Shortcuts to infotainment',
-          clicked: false
-        },
-        {
-          id: 14,
-          index: 1,
-          top: '26%',
-          left: '67%',
-          width: '50px',
-          height: '45px',
-          part: 'Active functions',
-          clicked: false
-        },
-        {
-          id: 15,
-          index: 1,
-          top: '26%',
-          left: '71.5%',
-          width: '150px',
-          height: '45px',
-          part: 'Status bar',
-          clicked: false
-        },
-        {
-          id: 16,
-          index: 1,
-          top: '83%',
-          left: '35%',
-          width: '580px',
-          height: '35px',
-          part: 'Climabar',
-          clicked: false
-        },
-        {
-          id: 17,
-          index: 1,
-          top: '83%',
-          left: '35%',
-          width: '580px',
-          height: '35px',
-          part: 'Climabar',
+          pdf: '.pdf',
           clicked: false
         },
         {
@@ -184,9 +124,12 @@ export default {
           width: '40px',
           height: '55px',
           part: 'airbag',
+          pdf: '.pdf',
           clicked: false
         },
-      ]
+      ],
+      showPdfPopup: false,
+      currentPdf: ''
     }
   },
   methods: {
@@ -197,13 +140,21 @@ export default {
       this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
     },
     handleHotspotClick(hotspot) {
-      hotspot.clicked = true;
-      console.log(`Parte clickeada: ${hotspot.part}`);
-      alert(`Has seleccionado: ${hotspot.part}`);
-      
-      setTimeout(() => {
-        hotspot.clicked = false;
-      }, 500);
+      if (hotspot.pdf) {
+        // Cierra primero el popup para forzar reinicio
+        this.showPdfPopup = false;
+        
+        // Usa nextTick para asegurar que el DOM se actualizó
+        this.$nextTick(() => {
+          this.currentPdf = hotspot.pdf;
+          this.showPdfPopup = true;
+        });
+      } else {
+        alert(`No hay PDF disponible para ${hotspot.part}`);
+      }
+    },
+    closePdfPopup() {
+      this.showPdfPopup = false;
     }
   },
   computed: {
@@ -211,46 +162,62 @@ export default {
       return new URL(`../assets/${this.images[this.currentIndex]}`, import.meta.url).href;
     },
     visibleHotspots() {
-      // Filtrar hotspots que coincidan con el currentIndex actual
       return this.hotspots.filter(hotspot => hotspot.index === this.currentIndex);
+    },
+    pdfPath() {
+        if (!this.currentPdf) return null;
+        return `/pdfs/${this.currentPdf}`;
     }
   }
 }
 </script>
 
 <template>
-  <div class="fullscreen-container">
-    <!-- Imagen FULLSCREEN -->
-    <img :src="currentImage" :alt="`Image ${currentIndex + 1}`" class="fullscreen-image">
-    
-    <!-- Botones de navegación -->
-    <button class="nav-button left" @click="prevImage">
-      &lt;
-    </button>
-    <button class="nav-button right" @click="nextImage">
-      &gt;
-    </button>
-    
-    <!-- Hotspots interactivos (solo los visibles) -->
-    <button
-      v-for="hotspot in visibleHotspots"
-      :key="hotspot.id"
-      class="hotspot"
-      :style="{
-        top: hotspot.top,
-        left: hotspot.left,
-        width: hotspot.width,
-        height: hotspot.height,
-      }"
-      @click="handleHotspotClick(hotspot)"
-      :class="{ 'hotspot-clicked': hotspot.clicked }"
-      :title="`Ver ${hotspot.part}`"
-    ></button>
-  </div>
-</template>
+    <div class="fullscreen-container">
+      <!-- Imagen FULLSCREEN -->
+      <img :src="currentImage" :alt="`Image ${currentIndex + 1}`" class="fullscreen-image">
+      
+      <!-- Botones de navegación -->
+      <button class="nav-button left" @click="prevImage">
+        &lt;
+      </button>
+      <button class="nav-button right" @click="nextImage">
+        &gt;
+      </button>
+      
+      <!-- Hotspots interactivos -->
+      <button
+        v-for="hotspot in visibleHotspots"
+        :key="hotspot.id"
+        class="hotspot"
+        :style="{
+          top: hotspot.top,
+          left: hotspot.left,
+          width: hotspot.width,
+          height: hotspot.height,
+        }"
+        @click="handleHotspotClick(hotspot)"
+        :title="`Ver ${hotspot.part}`"
+      ></button>
+      
+      <!-- Popup de PDF con solución completa -->
+      <div v-if="showPdfPopup" class="pdf-popup">
+        <div class="pdf-popup-content">
+          <button class="close-btn" @click="closePdfPopup">×</button>
+          <iframe 
+            :key="'pdf-' + currentPdf"
+            :src="pdfPath" 
+            class="pdf-iframe"
+            frameborder="0"
+          ></iframe>
+          <p class="pdf-title">{{ currentPdf }}</p>
+        </div>
+      </div>
+    </div>
+  </template>
 
 <style scoped>
-/* Tus estilos existentes se mantienen igual */
+/* Estilos FULLSCREEN */
 .fullscreen-container {
   position: fixed;
   top: 0;
@@ -272,6 +239,7 @@ export default {
   z-index: 0;
 }
 
+/* Botones de navegación */
 .nav-button {
   position: fixed;
   top: 50%;
@@ -304,6 +272,7 @@ export default {
   right: 30px;
 }
 
+/* Hotspots */
 .hotspot {
   position: absolute;
   background-color: rgba(255, 255, 0, 0.3);
@@ -322,12 +291,63 @@ export default {
   transform: scale(1.1);
 }
 
-.hotspot-clicked {
-  background-color: rgba(0, 255, 0, 0.5) !important;
-  transform: scale(1.2);
-  border: 2px solid #00ff00;
+/* Popup PDF */
+.pdf-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
 }
 
+.pdf-popup-content {
+    background-color: white;
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+    height: 80%;
+    max-height: 90vh;
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    cursor: #333;
+    z-index: 2001;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.pdf-iframe {
+  width: 100%;
+  height: calc(100% - 30px);
+  margin-top: 10px;
+}
+
+.pdf-title {
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .nav-button {
     width: 50px;
@@ -344,6 +364,16 @@ export default {
   .hotspot {
     width: 40px !important;
     height: 40px !important;
+  }
+  
+  .pdf-popup-content {
+    width: 95%;
+    height: 95%;
+    padding: 15px;
+  }
+  
+  .pdf-iframe {
+    height: calc(100% - 25px);
   }
 }
 </style>
