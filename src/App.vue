@@ -28,61 +28,62 @@ export default {
       alert(`Has seleccionado: ${part}`);
     },
     async hacerPreguntas() {
-      if (!this.inputUser.trim()) return;
-      
-      // Agregar mensaje del usuario
-      this.messages.push({
-        text: this.inputUser,
-        sender: 'user',
-        timestamp: new Date().toLocaleTimeString()
-      });
-      
-      const pregunta = this.inputUser;
-      this.inputUser = '';
-      this.isLoading = true;
-      
-      // Agregar mensaje de carga
-      this.messages.push({
-        text: 'Gemini is typing...',
-        sender: 'bot',
-        isLoading: true,
-        timestamp: new Date().toLocaleTimeString()
-      });
-      
-      try {
-        const response = await fetch('http://localhost:5000/ask', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({question: pregunta})
-        });
+    if (!this.inputUser.trim()) return;
 
-        const data = await response.json();
-        
-        // Reemplazar mensaje de carga con la respuesta real
-        this.messages.pop();
-        this.messages.push({
-          text: data.response,
-          sender: 'bot',
-          timestamp: new Date().toLocaleTimeString()
-        });
-        
-      } catch (error) {
-        console.error('Error:', error);
-        this.messages.pop();
-        this.messages.push({
-          text: 'Sorry, there was an error processing your request.',
-          sender: 'bot',
-          timestamp: new Date().toLocaleTimeString()
-        });
-      } finally {
-        this.isLoading = false;
-        this.$nextTick(() => {
-          this.scrollToBottom();
-        });
-      }
-    },
+    this.messages.push({
+      text: this.inputUser,
+      sender: 'user',
+      timestamp: new Date().toLocaleTimeString()
+    });
+
+    const pregunta = this.inputUser;
+    this.inputUser = '';
+    this.isLoading = true;
+
+    // Agregar mensaje de carga
+    this.messages.push({
+      text: '...',
+      sender: 'bot',
+      isLoading: true,
+      timestamp: new Date().toLocaleTimeString()
+    });
+
+    // Esperar al siguiente tick del DOM para renderizar el mensaje "is typing..."
+    await this.$nextTick();
+
+    try {
+      const response = await fetch('http://localhost:5000/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ question: pregunta })
+      });
+
+      const data = await response.json();
+
+      this.messages.pop();
+      this.messages.push({
+        text: data.response,
+        sender: 'bot',
+        timestamp: new Date().toLocaleTimeString()
+      });
+
+    } catch (error) {
+      console.error('Error:', error);
+      this.messages.pop();
+      this.messages.push({
+        text: 'Sorry, there was an error processing your request.',
+        sender: 'bot',
+        timestamp: new Date().toLocaleTimeString()
+      });
+    } finally {
+      this.isLoading = false;
+      this.$nextTick(() => {
+        this.scrollToBottom();
+      });
+    }
+  },
     scrollToBottom() {
       const chatContainer = this.$refs.chatContainer;
       if (chatContainer) {
@@ -118,16 +119,23 @@ export default {
     
     <!-- Chat container -->
     <div class="chat-container" ref="chatContainer" v-if="chatbotFlag">
-      <div v-for="(message, index) in messages" :key="index" 
-           :class="['message', message.sender]">
-        <div class="message-content">
-          <div class="message-text" v-if="!message.isLoading">{{ message.text }}</div>
-          <div class="message-text loading" v-else>
-            <span class="dot-flashing"></span>
+      <div class="chat-messages">
+        <div v-for="(message, index) in messages" :key="index" 
+             :class="['message', message.sender]">
+          <div class="message-content">
+            <div v-if="!message.isLoading" class="message-text">{{ message.text }}</div>
+            <div v-else class="message-text loading">
+              <span class="typing-indicator">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </span>
+            </div>
+            <div class="message-time">{{ message.timestamp }}</div>
           </div>
-          <div class="message-time">{{ message.timestamp }}</div>
         </div>
       </div>
+      
       <div class="chat-input-container">
         <input 
           v-model="inputUser" 
@@ -159,10 +167,10 @@ export default {
 </template>
 
 <style scoped>
-/* Estilos existentes */
+/* Base Styles */
 header {
   position: relative;
-  background-color: black;
+  background-color: #000;
   padding: 0 16px;
   height: 60px;
   display: flex;
@@ -171,33 +179,33 @@ header {
   z-index: 1000;
 }
 
-.header-buttons {
-  display: flex;
-  gap: 15px;
-}
-
 .header-btn {
-  background: black;
+  background: #000;
   border: none;
-  color: white;
+  color: #fff;
   padding: 10px 16px;
   border-radius: 20px;
   cursor: pointer;
   font-size: 16px;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
 .header-btn:hover {
-  background-color: rgba(255, 255, 255, 0.8);
-  color: black;
+  color: #000;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
+/* Car Container */
 .car-container {
   position: relative;
   height: calc(100vh - 60px);
   width: 100vw;
 }
 
+/* View Selector */
 .view-selector {
   position: fixed;
   bottom: 20px;
@@ -212,7 +220,7 @@ header {
 }
 
 .view-selector button {
-  background: black;
+  background: #000;
   border: none;
   width: 40px;
   height: 40px;
@@ -232,36 +240,39 @@ header {
 }
 
 .view-selector button.active {
-  background: white;
+  background: #fff;
 }
 
 .view-selector button.active img {
   filter: invert(0);
 }
 
-.main-content {
-  position: relative;
-  z-index: 1;
-}
-
-/* Nuevos estilos para el chat */
+/* Chat Container */
 .chat-container {
-  font-family: 'CupraRegular', serif;
+  font-family: 'CupraRegular', sans-serif;
   position: fixed;
   top: 80px;
   right: 20px;
   width: 350px;
-  height: 500px;
-  background-color: rgba(255, 255, 255, 0.9);
+  height: 530px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid #ff5e00;
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(255, 94, 0, 0.3);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  padding: 15px;
+  overflow: hidden;
   z-index: 1000;
 }
 
+.chat-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Messages */
 .message {
   margin-bottom: 15px;
   display: flex;
@@ -277,20 +288,23 @@ header {
 
 .message-content {
   max-width: 80%;
-  padding: 10px 15px;
+  padding: 12px 15px;
   border-radius: 18px;
   position: relative;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .user .message-content {
-  background-color: #0078FF;
-  color: white;
+  background: linear-gradient(135deg, #ff5e00, #ff8c00);
+  color: #fff;
   border-bottom-right-radius: 5px;
 }
 
 .bot .message-content {
-  background-color: #f1f1f1;
-  color: #333;
+  background: #1a1a1a;
+  color: #e6e6e6;
+  border: 1px solid #333;
   border-bottom-left-radius: 5px;
 }
 
@@ -299,106 +313,131 @@ header {
 }
 
 .message-time {
-  font-size: 0.7em;
+  font-size: 11px;
   opacity: 0.7;
   text-align: right;
   margin-top: 5px;
+  color: #999;
 }
 
+/* Loading Indicator */
+.loading {
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typing-indicator .dot {
+  width: 6px;
+  height: 6px;
+  background-color: #ff5e00;
+  border-radius: 50%;
+  animation: dotPulse 1.4s infinite ease-in-out;
+}
+
+.typing-indicator .dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-indicator .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotPulse {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* Input Container */
 .chat-input-container {
-  position: fixed;
-  top: 590px;
-  right: 20px;
-  width: 350px;
+  padding: 15px;
+  background: #000;
+  border-top: 1px solid #333;
   display: flex;
   gap: 10px;
-  z-index: 1000;
+  align-items: center;
 }
 
 .chat-input-container input {
   flex: 1;
   padding: 12px 15px;
   border-radius: 25px;
-  border: 1px solid #ccc;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #fff;
   outline: none;
+  font-family: 'CupraRegular', sans-serif;
+  transition: border 0.3s;
+}
+
+.chat-input-container input:focus {
+  border-color: #ff5e00;
 }
 
 .chat-input-container button {
-  background: black;
-  color: white;
+  background: linear-gradient(135deg, #ff5e00, #ff8c00);
+  color: #fff;
   border: none;
   padding: 0 20px;
+  height: 40px;
   border-radius: 25px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s;
   min-width: 80px;
+  font-family: 'CupraRegular', sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.chat-input-container button:hover {
+  background: linear-gradient(135deg, #ff8c00, #ff5e00);
+  box-shadow: 0 0 10px rgba(255, 94, 0, 0.5);
 }
 
 .chat-input-container button:disabled {
-  background: #ccc;
+  background: #333;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-/* Animación de carga */
-.dot-flashing {
-  position: relative;
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
-  background-color: #999;
-  color: #999;
-  animation: dotFlashing 1s infinite linear alternate;
-  animation-delay: 0.5s;
-}
-
-.dot-flashing::before, .dot-flashing::after {
-  content: '';
-  display: inline-block;
-  position: absolute;
-  top: 0;
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
-  background-color: #999;
-  color: #999;
-}
-
-.dot-flashing::before {
-  left: -15px;
-  animation: dotFlashing 1s infinite alternate;
-  animation-delay: 0s;
-}
-
-.dot-flashing::after {
-  left: 15px;
-  animation: dotFlashing 1s infinite alternate;
-  animation-delay: 1s;
-}
-
-@keyframes dotFlashing {
-  0% {
-    background-color: #999;
-  }
-  50%, 100% {
-    background-color: #e0e0e0;
-  }
-}
-
-.loading {
-  min-height: 20px;
-}
-
+/* Sending Animation */
 .sending {
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255,255,255,.3);
+  border: 2px solid rgba(255, 94, 0, 0.3);
   border-radius: 50%;
-  border-top-color: #fff;
+  border-top-color: #ff5e00;
   animation: spin 1s ease-in-out infinite;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Scrollbar */
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #ff5e00;
+  border-radius: 3px;
 }
 </style>
