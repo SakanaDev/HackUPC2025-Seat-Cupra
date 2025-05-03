@@ -31,6 +31,12 @@ export default {
       <a href="">
         <img src="https://www.cupraofficial.es/etc.clientlibs/cupra-website/components/clientlibs/resources/icons/logos/logo-cupra.svg" alt="">
       </a>
+
+      <div class="header-buttons">
+        <button class="header-btn">Help</button>
+        <button class="header-btn">Drove it</button>
+      </div>
+
     </header>
     
     <div class="car-container">
@@ -113,4 +119,28 @@ header {
   position: relative;
   z-index: 1;
 }
+
+
+
+.header-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.header-btn {
+  background: black;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.header-btn:hover {
+  background: white;
+  color: black;
+}
+
 </style>
