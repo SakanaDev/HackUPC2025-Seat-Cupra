@@ -177,12 +177,12 @@ export default {
       <!-- Imagen FULLSCREEN -->
       <img :src="currentImage" :alt="`Image ${currentIndex + 1}`" class="fullscreen-image">
       
-      <!-- Botones de navegación -->
+      <!-- Botones de navegación con imágenes -->
       <button class="nav-button left" @click="prevImage">
-        &lt;
+        <img src="../assets/down-arrow.png" alt="Previous" class="arrow-icon left-arrow">
       </button>
       <button class="nav-button right" @click="nextImage">
-        &gt;
+        <img src="../assets/down-arrow.png" alt="Next" class="arrow-icon right-arrow">
       </button>
       
       <!-- Hotspots interactivos -->
@@ -245,18 +245,17 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   background: rgba(0, 0, 0, 0.5);
-  color: white;
   border: none;
   border-radius: 50%;
   width: 60px;
   height: 60px;
-  font-size: 28px;
   cursor: pointer;
   z-index: 1001;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: all 0.3s ease;
+  padding: 0;
 }
 
 .nav-button:hover {
@@ -270,6 +269,20 @@ export default {
 
 .right {
   right: 30px;
+}
+
+.arrow-icon {
+  width: 30px;
+  height: 30px;
+  filter: invert(1); /* Hace la flecha blanca */
+}
+
+.left-arrow {
+  transform: rotate(90deg);
+}
+
+.right-arrow {
+  transform: rotate(-90deg);
 }
 
 /* Hotspots */
@@ -354,8 +367,13 @@ export default {
   .nav-button {
     width: 50px;
     height: 50px;
-    font-size: 24px;
   }
+  
+  .arrow-icon {
+    width: 25px;
+    height: 25px;
+  }
+  
   .left {
     left: 15px;
   }
