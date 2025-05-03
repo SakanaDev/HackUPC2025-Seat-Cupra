@@ -10,7 +10,7 @@ doc_url = "https://hackupc2025.slack.com/files/U08NSQU4G1Z/F08QU6K8HKM/cupra_tav
 # Retrieve and encode the PDF byte
 filepath = pathlib.Path('manual_cupra.pdf')
 
-prompt = "eres un asistente virtual experto en ayudar a comprender manuales de usuario para nuevos clientes, responde esto sobre mi CUPRA Tavascan: " + input("Pregunta puta: ")
+prompt = "eres un asistente virtual experto en ayudar a comprender manuales de usuario para nuevos clientes, responde esto sobre mi CUPRA Tavascan: " + input("¿En que puedo ayudarle?\n")
 
 
 response = client.models.generate_content(
