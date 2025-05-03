@@ -2,6 +2,7 @@ from google import genai
 #from google.genai import types
 import httpx
 import pathlib
+import json
 
 client = genai.Client(api_key="AIzaSyCuDpqDuQMslHdR4HbMru2Y9DpE94w5UZg")
 
@@ -22,4 +23,7 @@ response = client.models.generate_content(
       ),
       prompt])
 print(response.text)
-
+messagge = {}
+messagge['chatbot'] = response.text
+with open('chatbot/data.json', 'w') as f :
+    archivo = json.dump(messagge, f) # creacion y guardado del json
