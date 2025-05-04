@@ -84,17 +84,16 @@ Built for the SEAT/CUPRA HackUPC 2025 Challenge using Vue.js and Flask.
 ```
 
 ## **🔍 How It Works**
-1. **User clicks a car part** → Frontend sends part name to Flask
-2. **Flask retrieves manual page** → Returns as pop-up
-3. **User asks chatbot** → Flask forwards query + manual context to Gemini → Displays response
+1. **User clicks a car part** → Frontend shows the manual page
+2. **User asks chatbot** → Flask forwards query + manual context to Gemini → Displays response
 
 --- 
 
 ## **🎯 Challenges & Solutions**
 | **Challenge**       | **Solution**       |
 |---------------------|----------------------------------------|
-| Gemini token limits	| Chunked manual text + smart caching    |
-| Clickable hotspots  | SVG overlays or bounding-box detection |
+| Gemini token limits	| Chunked manual text |
+| Clickable hotspots  | Interactive area with buttons |
 | CORS issues         | Flask-CORS middleware                  |
 
 ---
@@ -103,6 +102,7 @@ Built for the SEAT/CUPRA HackUPC 2025 Challenge using Vue.js and Flask.
 - 3D Model Integration: Replace images with Three.js
 - Voice Commands: "Hey CUPRA, how do I open the trunk?"
 - Multi-language Support: Use Gemini's multilingual capabilities
+- Implement "Drive it" button: Interactive view of the car
 
 ---
 
