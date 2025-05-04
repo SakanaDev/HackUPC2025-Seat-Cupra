@@ -70,16 +70,17 @@ Built for the SEAT/CUPRA HackUPC 2025 Challenge using Vue.js and Flask.
 ├── backend/  
 │   ├── app.py                 # Flask server (Gemini queries)  
 │   ├── .env                   # API keys  
-│   └── manual_context/        # PDF/text of CUPRA manual  
-├── frontend/  
-│   ├── public/                # Car images (exterior/interior)  
-│   ├── src/  
-│       ├── assets/            # CSS/icons  
-│       ├── components/        # CarViewer, Chatbot, Popup  
-│       ├── stores/            # Pinia state (selected part)  
-│       ├── App.vue            # Root component  
-│       └── main.js            # Vue init  
-└── README.md  
+│   └── manual_cupra.pdf       # PDF of CUPRA manual
+├── chatbot/
+│   └── main.js                # Chat default text  
+├── public/                    # Car Manual  
+├── src/  
+├── assets/                    # Main CSS/Car images  
+│   ├── components/            # CarOutised, CarInside, VideoPro  
+│   ├── App.vue                # Root component  
+│   └── main.js                # Vue init  
+└── README.md
+└── index.html                 # Main index of Vue project  
 ```
 
 ## **🔍 How It Works**
